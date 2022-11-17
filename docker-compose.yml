@@ -1,0 +1,17 @@
+
+
+volume:
+  db:
+
+services:
+  db:
+    image: "postgres:14.3"
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+    environment:
+      POSTGRES_DB: roddbot_db
+      POSTGRES_USER: roddbot_admin
+      POSTGRES_PASSWORD: password

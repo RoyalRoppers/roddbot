@@ -1,0 +1,12 @@
+output = "internal/models"
+wipe = true
+no-tests = true
+
+[psql]
+dbname = "roddbot_db"
+port = 5433
+user = "roddbot_admin"
+pass = "password"
+sslmode = "disable"
+host = "localhost"
+blacklist = ["schema_migrations"]
