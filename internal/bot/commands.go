@@ -3,11 +3,13 @@ package bot
 import "github.com/bwmarrin/discordgo"
 
 func cmds() []*discordgo.ApplicationCommand {
+	f := false
 	return []*discordgo.ApplicationCommand{
 		{
-			Name:        "ctf",
-			Type:        discordgo.ChatApplicationCommand,
-			Description: "ctf",
+			Name:         "ctf",
+			Type:         discordgo.ChatApplicationCommand,
+			Description:  "ctf",
+			DMPermission: &f,
 			Options: []*discordgo.ApplicationCommandOption{
 				{
 					Name:        "new",
