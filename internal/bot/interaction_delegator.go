@@ -13,12 +13,7 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 			b.log.Error("interaction handler paniced", zap.Any("err", err))
 
 			go func() {
-				errx := b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: `¯\_( ͡🔥 ͜ʖ ͡🔥)_/¯`,
-					},
-				})
+				errx := b.reply(m.Interaction, `¯\_( ͡🔥 ͜ʖ ͡🔥)_/¯`)
 				if errx != nil {
 					b.log.Error("panic response failed lol", zap.Error(errx))
 				}
@@ -50,11 +45,6 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 
 	default:
 		b.log.Error("unhandeled interaction", zap.Any("interaction", d))
-		b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "🚨🚨 Unkown interaction, something is wrong 🚨🚨",
-			},
-		})
+		b.reply(m.Interaction, "🚨🚨 Unkown interaction, something is wrong 🚨🚨")
 	}
 }

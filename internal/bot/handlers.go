@@ -81,12 +81,7 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewCTFPayload) {
 		return
 	}
 
-	err = b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: fmt.Sprintf("Created %s", chann.Mention()),
-		},
-	})
+	err = b.reply(m.Interaction, fmt.Sprintf("Created %s", chann.Mention()))
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
@@ -130,12 +125,7 @@ func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
 		return
 	}
 
-	err = b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: "done!",
-		},
-	})
+	err = b.reply(m.Interaction, "done!")
 
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
@@ -173,12 +163,7 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 		return
 	}
 
-	err = b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: fmt.Sprintf("nice, flag: `%s`", p.Flag),
-		},
-	})
+	err = b.reply(m.Interaction, fmt.Sprintf("nice, flag: `%s`", p.Flag))
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
