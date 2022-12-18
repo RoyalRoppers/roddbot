@@ -121,6 +121,9 @@ func (b *bot) updateCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) 
 	if p.Username != nil {
 		cols[models.CTFChannelColumns.Username] = *p.Username
 	}
+	if p.CTFDAPIToken != nil {
+		cols[models.CTFChannelColumns.APIToken] = *p.CTFDAPIToken
+	}
 
 	if len(cols) == 0 {
 		err = b.reply(m.Interaction, "Nothing to update")
