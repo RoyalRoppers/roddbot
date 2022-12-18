@@ -23,5 +23,6 @@ CREATE TABLE chall_channels (
     parent_id TEXT NOT NULL REFERENCES ctf_channels(id),
     title TEXT NOT NULL,
     flag TEXT,
-    solved_at TIMESTAMPTZ
+    solved_at TIMESTAMPTZ,
+    ctfd_id INT
 );

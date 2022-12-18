@@ -7,9 +7,11 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/movitz-s/roddbot/internal/ctfd"
 	"github.com/movitz-s/roddbot/internal/models"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +44,6 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 	}
 
 	if exists {
-		// TODO ask if we should upsert
 		b.reply(m.Interaction, fmt.Sprintf("`%s` already exists, please update it instead", *p.Name))
 		return
 	}
@@ -69,6 +70,7 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 		Type:     discordgo.ChannelTypeGuildText,
 		Topic:    channelTopic(ctf),
 		ParentID: category.ID,
+		Position: 1,
 	})
 	if err != nil {
 		b.log.Error("could not create channel", zap.Error(err))
@@ -227,27 +229,8 @@ func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
 		return
 	}
 
-	disChan, err := b.sess.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
-		Name:     p.Name,
-		Type:     discordgo.ChannelTypeGuildText,
-		Topic:    channelTopic(ctf),
-		ParentID: ctf.ID,
-		Position: 25,
-	})
+	_, err = b.createChallChan(ctf, m.GuildID, p.Name)
 	if err != nil {
-		b.log.Error("could not create channel", zap.Error(err))
-		return
-	}
-
-	challChan := &models.ChallChannel{
-		ID:       disChan.ID,
-		ParentID: ctf.ID,
-		Title:    p.Name,
-	}
-
-	err = challChan.Insert(context.TODO(), b.db, boil.Infer())
-	if err != nil {
-		b.log.Error("could not insert chall chan", zap.Error(err))
 		return
 	}
 
@@ -293,6 +276,117 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
+}
+
+func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
+	ctf, err := models.CTFChannels(
+		models.CTFChannelWhere.GuildID.EQ(m.GuildID),
+	).One(context.TODO(), b.db)
+	if err != nil {
+		b.reply(m.Interaction, "Could not find guild")
+		b.log.Error("could not get guild", zap.Error(err))
+		return
+	}
+
+	if !ctf.APIToken.Valid {
+		b.reply(m.Interaction, "Could not find a CTFd API token :(")
+		return
+	}
+
+	c := ctfd.New(ctf.URL, ctf.APIToken.String)
+	challs, err := c.GetChallanges()
+	if err == ctfd.ErrBadAuth {
+		b.reply(m.Interaction, "Could not authenticate with CTFd")
+		return
+	}
+	if err != nil {
+		b.reply(m.Interaction, "Something went wrong when talking to CTFd")
+		return
+	}
+
+	err = b.sess.InteractionRespond(m.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseDeferredChannelMessageWithSource,
+	})
+	if err != nil {
+		b.log.Error("could not respond", zap.Error(err))
+		return
+	}
+
+	challIDs, err := models.ChallChannels(
+		models.ChallChannelWhere.ParentID.EQ(ctf.ID),
+		models.ChallChannelWhere.CTFDID.IsNotNull(),
+		qm.Select(models.ChallChannelColumns.CTFDID),
+	).All(context.TODO(), b.db)
+	if err != nil {
+		b.log.Error("could not get ctfd ids", zap.Error(err))
+		return
+	}
+
+	msg := "Created channels:\n"
+	for _, chall := range challs {
+		for _, v := range challIDs {
+			if v.CTFDID.Int == chall.ID {
+				continue
+			}
+		}
+
+		disChan, err := b.createChallChan(ctf, m.GuildID, chall.Name)
+		if err != nil {
+			return
+		}
+		msg += disChan.Mention() + "\n"
+	}
+
+	_, err = b.sess.InteractionResponseEdit(m.Interaction, &discordgo.WebhookEdit{
+		Content: &msg,
+	})
+	if err != nil {
+		b.log.Error("could not update response", zap.Error(err))
+	}
+}
+
+func (b *bot) purge(m *discordgo.InteractionCreate) {
+	ctf, err := models.CTFChannels(
+		models.CTFChannelWhere.TopicChan.EQ(m.ChannelID),
+		qm.Load(models.CTFChannelRels.ParentChallChannels),
+	).One(context.TODO(), b.db)
+	if err != nil {
+		b.reply(m.Interaction, "Could not topic channel")
+		b.log.Error("could not get guild", zap.Error(err))
+		return
+	}
+
+	for _, v := range ctf.R.ParentChallChannels {
+		_, err = b.sess.ChannelDelete(v.ID)
+		if err != nil {
+			b.log.Error("could not delete in discord", zap.Error(err), zap.String("challID", v.ID))
+			return
+		}
+		_, err = v.Delete(context.TODO(), b.db) // im lazy and i dont care
+		if err != nil {
+			b.log.Error("could not delete chall chan", zap.Error(err), zap.String("challID", v.ID))
+			return
+		}
+	}
+
+	_, err = b.sess.ChannelDelete(ctf.TopicChan)
+	if err != nil {
+		b.log.Error("could not delete in discord", zap.Error(err), zap.String("challID", ctf.TopicChan))
+		return
+	}
+	_, err = b.sess.ChannelDelete(ctf.ID)
+	if err != nil {
+		b.log.Error("could not delete in discord", zap.Error(err), zap.String("challID", ctf.ID))
+		return
+	}
+
+	_, err = ctf.Delete(context.TODO(), b.db)
+	if err != nil {
+		b.log.Error("could not delete chall chan", zap.Error(err), zap.String("ctfID", ctf.ID))
+		return
+	}
+
+	b.reply(m.Interaction, "deleted")
 }
 
 func channelTopic(p *models.CTFChannel) string {

@@ -113,6 +113,18 @@ func cmds() []*discordgo.ApplicationCommand {
 						},
 					},
 				},
+				{
+					Name:        "import-ctfd",
+					Description: "Import from CTFD",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options:     []*discordgo.ApplicationCommandOption{},
+				},
+				{
+					Name:        "purge",
+					Description: "Purges a group of CTF channels",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options:     []*discordgo.ApplicationCommandOption{},
+				},
 			},
 		},
 	}

@@ -48,6 +48,12 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 		unmarshal.Unmarshal(d.Options[0].Options, &payload)
 		b.newChall(m, &payload)
 
+	case "import-ctfd":
+		b.importCtfd(m)
+
+	case "purge":
+		b.purge(m)
+
 	default:
 		b.log.Error("unhandeled interaction", zap.Any("interaction", d))
 		b.reply(m.Interaction, "🚨🚨 Unkown interaction, something is wrong 🚨🚨")

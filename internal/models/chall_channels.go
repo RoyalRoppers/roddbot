@@ -30,6 +30,7 @@ type ChallChannel struct {
 	Title     string      `boil:"title" json:"title" toml:"title" yaml:"title"`
 	Flag      null.String `boil:"flag" json:"flag,omitempty" toml:"flag" yaml:"flag,omitempty"`
 	SolvedAt  null.Time   `boil:"solved_at" json:"solved_at,omitempty" toml:"solved_at" yaml:"solved_at,omitempty"`
+	CTFDID    null.Int    `boil:"ctfd_id" json:"ctfd_id,omitempty" toml:"ctfd_id" yaml:"ctfd_id,omitempty"`
 
 	R *challChannelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L challChannelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -42,6 +43,7 @@ var ChallChannelColumns = struct {
 	Title     string
 	Flag      string
 	SolvedAt  string
+	CTFDID    string
 }{
 	ID:        "id",
 	CreatedAt: "created_at",
@@ -49,6 +51,7 @@ var ChallChannelColumns = struct {
 	Title:     "title",
 	Flag:      "flag",
 	SolvedAt:  "solved_at",
+	CTFDID:    "ctfd_id",
 }
 
 var ChallChannelTableColumns = struct {
@@ -58,6 +61,7 @@ var ChallChannelTableColumns = struct {
 	Title     string
 	Flag      string
 	SolvedAt  string
+	CTFDID    string
 }{
 	ID:        "chall_channels.id",
 	CreatedAt: "chall_channels.created_at",
@@ -65,6 +69,7 @@ var ChallChannelTableColumns = struct {
 	Title:     "chall_channels.title",
 	Flag:      "chall_channels.flag",
 	SolvedAt:  "chall_channels.solved_at",
+	CTFDID:    "chall_channels.ctfd_id",
 }
 
 // Generated where
@@ -175,6 +180,44 @@ func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
 func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
 func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
+type whereHelpernull_Int struct{ field string }
+
+func (w whereHelpernull_Int) EQ(x null.Int) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Int) NEQ(x null.Int) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Int) LT(x null.Int) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Int) LTE(x null.Int) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Int) GT(x null.Int) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Int) GTE(x null.Int) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelpernull_Int) IN(slice []int) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelpernull_Int) NIN(slice []int) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
+func (w whereHelpernull_Int) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Int) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+
 var ChallChannelWhere = struct {
 	ID        whereHelperstring
 	CreatedAt whereHelpertime_Time
@@ -182,6 +225,7 @@ var ChallChannelWhere = struct {
 	Title     whereHelperstring
 	Flag      whereHelpernull_String
 	SolvedAt  whereHelpernull_Time
+	CTFDID    whereHelpernull_Int
 }{
 	ID:        whereHelperstring{field: "\"chall_channels\".\"id\""},
 	CreatedAt: whereHelpertime_Time{field: "\"chall_channels\".\"created_at\""},
@@ -189,6 +233,7 @@ var ChallChannelWhere = struct {
 	Title:     whereHelperstring{field: "\"chall_channels\".\"title\""},
 	Flag:      whereHelpernull_String{field: "\"chall_channels\".\"flag\""},
 	SolvedAt:  whereHelpernull_Time{field: "\"chall_channels\".\"solved_at\""},
+	CTFDID:    whereHelpernull_Int{field: "\"chall_channels\".\"ctfd_id\""},
 }
 
 // ChallChannelRels is where relationship names are stored.
@@ -219,9 +264,9 @@ func (r *challChannelR) GetParent() *CTFChannel {
 type challChannelL struct{}
 
 var (
-	challChannelAllColumns            = []string{"id", "created_at", "parent_id", "title", "flag", "solved_at"}
+	challChannelAllColumns            = []string{"id", "created_at", "parent_id", "title", "flag", "solved_at", "ctfd_id"}
 	challChannelColumnsWithoutDefault = []string{"id", "created_at", "parent_id", "title"}
-	challChannelColumnsWithDefault    = []string{"flag", "solved_at"}
+	challChannelColumnsWithDefault    = []string{"flag", "solved_at", "ctfd_id"}
 	challChannelPrimaryKeyColumns     = []string{"id"}
 	challChannelGeneratedColumns      = []string{}
 )
