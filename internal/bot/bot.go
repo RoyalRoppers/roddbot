@@ -28,6 +28,7 @@ func New(conf *config.Config, log *zap.Logger, db *sql.DB) (*bot, error) {
 		db:   db,
 	}
 
+	b.sess.ShouldRetryOnRateLimit = false
 	b.sess.AddHandler(b.msgCreateHandler)
 
 	b.sess.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {

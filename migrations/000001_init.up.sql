@@ -13,7 +13,8 @@ CREATE TABLE ctf_channels (
     archived BOOLEAN NOT NULL,
     username TEXT,
     password TEXT,
-    ctftime_id INT
+    ctftime_id INT,
+    api_token TEXT
 );
 
 CREATE TABLE chall_channels (

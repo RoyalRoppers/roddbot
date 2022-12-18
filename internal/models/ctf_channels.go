@@ -34,6 +34,7 @@ type CTFChannel struct {
 	Username  null.String `boil:"username" json:"username,omitempty" toml:"username" yaml:"username,omitempty"`
 	Password  null.String `boil:"password" json:"password,omitempty" toml:"password" yaml:"password,omitempty"`
 	CtftimeID null.Int    `boil:"ctftime_id" json:"ctftime_id,omitempty" toml:"ctftime_id" yaml:"ctftime_id,omitempty"`
+	APIToken  null.String `boil:"api_token" json:"api_token,omitempty" toml:"api_token" yaml:"api_token,omitempty"`
 
 	R *ctfChannelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L ctfChannelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -50,6 +51,7 @@ var CTFChannelColumns = struct {
 	Username  string
 	Password  string
 	CtftimeID string
+	APIToken  string
 }{
 	ID:        "id",
 	TopicChan: "topic_chan",
@@ -61,6 +63,7 @@ var CTFChannelColumns = struct {
 	Username:  "username",
 	Password:  "password",
 	CtftimeID: "ctftime_id",
+	APIToken:  "api_token",
 }
 
 var CTFChannelTableColumns = struct {
@@ -74,6 +77,7 @@ var CTFChannelTableColumns = struct {
 	Username  string
 	Password  string
 	CtftimeID string
+	APIToken  string
 }{
 	ID:        "ctf_channels.id",
 	TopicChan: "ctf_channels.topic_chan",
@@ -85,6 +89,7 @@ var CTFChannelTableColumns = struct {
 	Username:  "ctf_channels.username",
 	Password:  "ctf_channels.password",
 	CtftimeID: "ctf_channels.ctftime_id",
+	APIToken:  "ctf_channels.api_token",
 }
 
 // Generated where
@@ -147,6 +152,7 @@ var CTFChannelWhere = struct {
 	Username  whereHelpernull_String
 	Password  whereHelpernull_String
 	CtftimeID whereHelpernull_Int
+	APIToken  whereHelpernull_String
 }{
 	ID:        whereHelperstring{field: "\"ctf_channels\".\"id\""},
 	TopicChan: whereHelperstring{field: "\"ctf_channels\".\"topic_chan\""},
@@ -158,6 +164,7 @@ var CTFChannelWhere = struct {
 	Username:  whereHelpernull_String{field: "\"ctf_channels\".\"username\""},
 	Password:  whereHelpernull_String{field: "\"ctf_channels\".\"password\""},
 	CtftimeID: whereHelpernull_Int{field: "\"ctf_channels\".\"ctftime_id\""},
+	APIToken:  whereHelpernull_String{field: "\"ctf_channels\".\"api_token\""},
 }
 
 // CTFChannelRels is where relationship names are stored.
@@ -198,9 +205,9 @@ func (r *ctfChannelR) GetParentChallChannels() ChallChannelSlice {
 type ctfChannelL struct{}
 
 var (
-	ctfChannelAllColumns            = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived", "username", "password", "ctftime_id"}
+	ctfChannelAllColumns            = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived", "username", "password", "ctftime_id", "api_token"}
 	ctfChannelColumnsWithoutDefault = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived"}
-	ctfChannelColumnsWithDefault    = []string{"username", "password", "ctftime_id"}
+	ctfChannelColumnsWithDefault    = []string{"username", "password", "ctftime_id", "api_token"}
 	ctfChannelPrimaryKeyColumns     = []string{"id"}
 	ctfChannelGeneratedColumns      = []string{}
 )

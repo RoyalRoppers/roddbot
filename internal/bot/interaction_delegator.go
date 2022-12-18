@@ -29,9 +29,14 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 
 	switch d.Options[0].Name {
 	case "new":
-		var payload NewCTFPayload
+		var payload NewUpdateCTFPayload
 		unmarshal.Unmarshal(d.Options[0].Options, &payload)
 		b.newCTF(m, &payload)
+
+	case "update":
+		var payload NewUpdateCTFPayload
+		unmarshal.Unmarshal(d.Options[0].Options, &payload)
+		b.updateCTF(m, &payload)
 
 	case "solve":
 		var payload SolvePayload

@@ -1,6 +1,6 @@
 
 
-volume:
+volumes:
   db:
 
 services:
