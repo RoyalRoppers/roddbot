@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
 	"os"
 
@@ -13,8 +14,12 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	_ "github.com/lib/pq"
 )
+
+//go:embed migrations/*.sql
+var migrateFS embed.FS
 
 func main() {
 	err := realMain()
@@ -42,8 +47,7 @@ func realMain() error {
 
 	// migrate
 
-	args := fmt.Sprintf("host=%s port=%d dbname=%s user='%s' password=%s sslmode=%s", "localhost", 5433, "roddbot_db", "roddbot_admin", "password", "disable")
-	db, err := sql.Open("postgres", args)
+	db, err := sql.Open("postgres", conf.DBStr)
 	if err != nil {
 		return err
 	}
@@ -51,9 +55,13 @@ func realMain() error {
 	if err != nil {
 		return err
 	}
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
-		"postgres", driver)
+
+	d, err := iofs.New(migrateFS, "migrations")
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithInstance("iofs", d, "postgres", driver)
 	if err != nil {
 		return err
 	}

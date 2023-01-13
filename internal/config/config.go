@@ -6,12 +6,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const (
-	EnvKeyToken = "RB_DISCORD_BOT_TOKEN"
-)
-
 type Config struct {
 	DiscordBotToken string
+	DBStr           string
 }
 
 func Load() (*Config, error) {
@@ -19,9 +16,9 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	discordToken := os.Getenv(EnvKeyToken)
 
 	return &Config{
-		DiscordBotToken: discordToken,
+		DiscordBotToken: os.Getenv("RB_DISCORD_BOT_TOKEN"),
+		DBStr:           os.Getenv("RB_DB_DSN"),
 	}, nil
 }

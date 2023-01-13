@@ -27,6 +27,11 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 		return
 	}
 
+	_, err := b.guildSanityCheck(m)
+	if err != nil {
+		return
+	}
+
 	switch d.Options[0].Name {
 	case "new":
 		var payload NewUpdateCTFPayload
