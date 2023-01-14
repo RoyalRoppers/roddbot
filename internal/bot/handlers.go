@@ -229,12 +229,12 @@ func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
 		return
 	}
 
-	_, err = b.createChallChan(ctf, m.GuildID, p.Name)
+	chann, err := b.createChallChan(ctf, m.GuildID, p.Name)
 	if err != nil {
 		return
 	}
 
-	err = b.reply(m.Interaction, "Done!")
+	err = b.reply(m.Interaction, "Created challenge "+chann.Mention()+" <:smile:1045994430848565308>")
 
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
