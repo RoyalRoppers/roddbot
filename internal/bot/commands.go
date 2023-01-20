@@ -98,6 +98,45 @@ func cmds() []*discordgo.ApplicationCommand {
 							Description: "The name of the challenge",
 							Required:    true,
 						},
+						{
+							Name:        "category",
+							Type:        discordgo.ApplicationCommandOptionInteger,
+							Description: "Category of the challenge. web/pwn/rev etc...",
+							Choices: []*discordgo.ApplicationCommandOptionChoice{
+								{
+									Name:  "web",
+									Value: 0,
+								},
+								{
+									Name:  "rev",
+									Value: 1,
+								},
+								{
+									Name:  "pwn",
+									Value: 2,
+								},
+								{
+									Name:  "crypto",
+									Value: 3,
+								},
+								{
+									Name:  "forensics",
+									Value: 4,
+								},
+								{
+									Name:  "misc",
+									Value: 5,
+								},
+								{
+									Name:  "blockchain",
+									Value: 6,
+								},
+								{
+									Name:  "osint",
+									Value: 7,
+								},
+							},
+						},
 					},
 				},
 				{

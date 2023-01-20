@@ -25,7 +25,8 @@ type NewUpdateCTFPayload struct {
 }
 
 type NewChallPayload struct {
-	Name string `optname:"name"`
+	Name     string `optname:"name"`
+	Category *int   `optname:"category"`
 }
 
 type SolvePayload struct {
@@ -229,7 +230,7 @@ func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
 		return
 	}
 
-	chann, err := b.createChallChan(ctf, m.GuildID, p.Name)
+	chann, err := b.createChallChan(ctf, m.GuildID, p.Name, p.Category)
 	if err != nil {
 		return
 	}
@@ -256,8 +257,8 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 	}
 
 	_, err = b.sess.ChannelEdit(challChan.ID, &discordgo.ChannelEdit{
-		Name:     "solved-" + challChan.Title,
-		Position: 100,
+		Name:     channelName(challChan.Title, challChan.Category.Ptr(), true),
+		Position: channelPosition(challChan.Category.Ptr(), true),
 	})
 	if err != nil {
 		b.log.Error("could not edit channel", zap.Error(err))
@@ -330,7 +331,7 @@ func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 			}
 		}
 
-		disChan, err := b.createChallChan(ctf, m.GuildID, chall.Name)
+		disChan, err := b.createChallChan(ctf, m.GuildID, chall.Name, nil) // TODO auto detect category
 		if err != nil {
 			return
 		}

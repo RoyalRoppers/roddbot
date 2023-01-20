@@ -6,17 +6,19 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/movitz-s/roddbot/internal/models"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"go.uber.org/zap"
 )
 
-func (b *bot) createChallChan(ctf *models.CTFChannel, guildID, name string) (*discordgo.Channel, error) {
+func (b *bot) createChallChan(ctf *models.CTFChannel, guildID, title string, category *int) (*discordgo.Channel, error) {
+
 	disChan, err := b.sess.GuildChannelCreateComplex(guildID, discordgo.GuildChannelCreateData{
-		Name:     name,
+		Name:     channelName(title, category, false),
 		Type:     discordgo.ChannelTypeGuildText,
 		Topic:    channelTopic(ctf),
 		ParentID: ctf.ID,
-		Position: 25,
+		Position: channelPosition(category, false),
 	})
 	if err != nil {
 		b.log.Error("could not create channel", zap.Error(err))
@@ -26,7 +28,8 @@ func (b *bot) createChallChan(ctf *models.CTFChannel, guildID, name string) (*di
 	challChan := &models.ChallChannel{
 		ID:       disChan.ID,
 		ParentID: ctf.ID,
-		Title:    name,
+		Title:    title,
+		Category: null.IntFromPtr(category),
 	}
 
 	err = challChan.Insert(context.TODO(), b.db, boil.Infer())

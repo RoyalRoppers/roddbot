@@ -32,10 +32,9 @@ func New(conf *config.Config, log *zap.Logger, db *sql.DB) (*bot, error) {
 	b.sess.AddHandler(b.msgCreateHandler)
 
 	b.sess.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		b.log.Info("bot ready")
+		b.log.Info("bot ready", zap.String("bot-name", b.sess.State.User.Username), zap.String("bot-id", b.sess.State.User.ID))
 
 		for _, ac := range cmds() {
-			b.log.Info("creating cmd", zap.String("cmd-name", ac.Name))
 			cmd, err := b.sess.ApplicationCommandCreate(sess.State.User.ID, "", ac)
 			if err != nil {
 				log.Error("could not create cmd", zap.Error(err))

@@ -4,7 +4,7 @@ no-tests = true
 
 [psql]
 dbname = "roddbot_db"
-port = 5433
+port = 5432
 user = "roddbot_admin"
 pass = "password"
 sslmode = "disable"
