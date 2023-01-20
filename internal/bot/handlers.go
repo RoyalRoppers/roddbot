@@ -273,7 +273,7 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 		return
 	}
 
-	err = b.reply(m.Interaction, fmt.Sprintf("nice, flag: `%s`", p.Flag))
+	err = b.reply(m.Interaction, fmt.Sprintf("Solved `%s`!\nFlag: `%s`", challChan.Title, p.Flag))
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
