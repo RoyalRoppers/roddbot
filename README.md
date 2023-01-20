@@ -1,23 +1,20 @@
+# roddbot
 
+<p align="center">
+  <img width="50% "src="images/birds.jpg" />
+</p>
 
+Roddbot is a Discord bot developed and used by the CTF team [RoyalRoppers](https://royalroppers.team).
 
+## Features
 
-Features
-- Create new CTF
-- Create new challenge
-- Mark challenge as solved
-- Archive ctf
+- Organize communication when playing CTFs
+- Easy to use slash commands
+- Bulk import challenges from CTFd
 
+## Configuration
 
-Nice to have
-- Upload larger files
-- Web gui
-- Warn when there isn't enough channels left
-- ctf intresseanmälan?
-- X-Audit-Log-Reason based
-- x hours/minutes left reminder
-- upsert values if new twice with same name
-- post ctftime description to first chan
-
-
-
+| Environment variable | Description                       |
+| -------------------- | --------------------------------- |
+| RB_DISCORD_BOT_TOKEN | Discord access token              |
+| RB_DB_DSN            | DSN string to a Postgres database |
