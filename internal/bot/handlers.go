@@ -55,15 +55,27 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 		return
 	}
 
+	vc, err := b.sess.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
+		Name:     *p.Name,
+		Type:     discordgo.ChannelTypeGuildVoice,
+		ParentID: category.ID,
+		Position: 2000,
+	})
+	if err != nil {
+		b.log.Error("could not create vc", zap.Error(err))
+		return
+	}
+
 	ctf := &models.CTFChannel{
-		ID:        category.ID,
-		GuildID:   m.GuildID,
-		Title:     *p.Name,
-		URL:       *p.URL,
-		Username:  null.StringFromPtr(p.Username),
-		CtftimeID: null.IntFromPtr(p.CTFTimeID),
-		Password:  null.StringFromPtr(p.Password),
-		APIToken:  null.StringFromPtr(p.CTFDAPIToken),
+		ID:             category.ID,
+		GuildID:        m.GuildID,
+		Title:          *p.Name,
+		URL:            *p.URL,
+		Username:       null.StringFromPtr(p.Username),
+		CtftimeID:      null.IntFromPtr(p.CTFTimeID),
+		Password:       null.StringFromPtr(p.Password),
+		APIToken:       null.StringFromPtr(p.CTFDAPIToken),
+		VoiceChannelID: vc.ID,
 	}
 
 	chann, err := b.sess.GuildChannelCreateComplex(m.GuildID, discordgo.GuildChannelCreateData{
@@ -86,7 +98,7 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 		return
 	}
 
-	err = b.reply(m.Interaction, fmt.Sprintf("Created %s", chann.Mention()))
+	err = b.reply(m.Interaction, fmt.Sprintf("Added challenge %s", chann.Mention()))
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
@@ -370,14 +382,20 @@ func (b *bot) purge(m *discordgo.InteractionCreate) {
 		}
 	}
 
+	_, err = b.sess.ChannelDelete(ctf.VoiceChannelID)
+	if err != nil {
+		b.log.Error("could not delete channel", zap.Error(err), zap.String("challID", ctf.ID), zap.String("channelID", ctf.VoiceChannelID))
+		return
+	}
+
 	_, err = b.sess.ChannelDelete(ctf.TopicChan)
 	if err != nil {
-		b.log.Error("could not delete in discord", zap.Error(err), zap.String("challID", ctf.TopicChan))
+		b.log.Error("could not delete channel", zap.Error(err), zap.String("challID", ctf.TopicChan), zap.String("channelID", ctf.TopicChan))
 		return
 	}
 	_, err = b.sess.ChannelDelete(ctf.ID)
 	if err != nil {
-		b.log.Error("could not delete in discord", zap.Error(err), zap.String("challID", ctf.ID))
+		b.log.Error("could not delete channel", zap.Error(err), zap.String("challID", ctf.ID), zap.String("channelID", ctf.ID))
 		return
 	}
 

@@ -21,6 +21,7 @@ func channelPosition(category *int, solved bool) int {
 		11-100: challs with category
 		1000: solved challs without category
 		1001-1100: solved challs with category
+		2000: voice chat
 	*/
 
 	pos := 10

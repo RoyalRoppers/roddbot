@@ -24,72 +24,77 @@ import (
 
 // CTFChannel is an object representing the database table.
 type CTFChannel struct {
-	ID        string      `boil:"id" json:"id" toml:"id" yaml:"id"`
-	TopicChan string      `boil:"topic_chan" json:"topic_chan" toml:"topic_chan" yaml:"topic_chan"`
-	CreatedAt time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	GuildID   string      `boil:"guild_id" json:"guild_id" toml:"guild_id" yaml:"guild_id"`
-	Title     string      `boil:"title" json:"title" toml:"title" yaml:"title"`
-	URL       string      `boil:"url" json:"url" toml:"url" yaml:"url"`
-	Archived  bool        `boil:"archived" json:"archived" toml:"archived" yaml:"archived"`
-	Username  null.String `boil:"username" json:"username,omitempty" toml:"username" yaml:"username,omitempty"`
-	Password  null.String `boil:"password" json:"password,omitempty" toml:"password" yaml:"password,omitempty"`
-	CtftimeID null.Int    `boil:"ctftime_id" json:"ctftime_id,omitempty" toml:"ctftime_id" yaml:"ctftime_id,omitempty"`
-	APIToken  null.String `boil:"api_token" json:"api_token,omitempty" toml:"api_token" yaml:"api_token,omitempty"`
+	ID             string      `boil:"id" json:"id" toml:"id" yaml:"id"`
+	TopicChan      string      `boil:"topic_chan" json:"topic_chan" toml:"topic_chan" yaml:"topic_chan"`
+	CreatedAt      time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	GuildID        string      `boil:"guild_id" json:"guild_id" toml:"guild_id" yaml:"guild_id"`
+	Title          string      `boil:"title" json:"title" toml:"title" yaml:"title"`
+	URL            string      `boil:"url" json:"url" toml:"url" yaml:"url"`
+	Archived       bool        `boil:"archived" json:"archived" toml:"archived" yaml:"archived"`
+	Username       null.String `boil:"username" json:"username,omitempty" toml:"username" yaml:"username,omitempty"`
+	Password       null.String `boil:"password" json:"password,omitempty" toml:"password" yaml:"password,omitempty"`
+	CtftimeID      null.Int    `boil:"ctftime_id" json:"ctftime_id,omitempty" toml:"ctftime_id" yaml:"ctftime_id,omitempty"`
+	APIToken       null.String `boil:"api_token" json:"api_token,omitempty" toml:"api_token" yaml:"api_token,omitempty"`
+	VoiceChannelID string      `boil:"voice_channel_id" json:"voice_channel_id" toml:"voice_channel_id" yaml:"voice_channel_id"`
 
 	R *ctfChannelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L ctfChannelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var CTFChannelColumns = struct {
-	ID        string
-	TopicChan string
-	CreatedAt string
-	GuildID   string
-	Title     string
-	URL       string
-	Archived  string
-	Username  string
-	Password  string
-	CtftimeID string
-	APIToken  string
+	ID             string
+	TopicChan      string
+	CreatedAt      string
+	GuildID        string
+	Title          string
+	URL            string
+	Archived       string
+	Username       string
+	Password       string
+	CtftimeID      string
+	APIToken       string
+	VoiceChannelID string
 }{
-	ID:        "id",
-	TopicChan: "topic_chan",
-	CreatedAt: "created_at",
-	GuildID:   "guild_id",
-	Title:     "title",
-	URL:       "url",
-	Archived:  "archived",
-	Username:  "username",
-	Password:  "password",
-	CtftimeID: "ctftime_id",
-	APIToken:  "api_token",
+	ID:             "id",
+	TopicChan:      "topic_chan",
+	CreatedAt:      "created_at",
+	GuildID:        "guild_id",
+	Title:          "title",
+	URL:            "url",
+	Archived:       "archived",
+	Username:       "username",
+	Password:       "password",
+	CtftimeID:      "ctftime_id",
+	APIToken:       "api_token",
+	VoiceChannelID: "voice_channel_id",
 }
 
 var CTFChannelTableColumns = struct {
-	ID        string
-	TopicChan string
-	CreatedAt string
-	GuildID   string
-	Title     string
-	URL       string
-	Archived  string
-	Username  string
-	Password  string
-	CtftimeID string
-	APIToken  string
+	ID             string
+	TopicChan      string
+	CreatedAt      string
+	GuildID        string
+	Title          string
+	URL            string
+	Archived       string
+	Username       string
+	Password       string
+	CtftimeID      string
+	APIToken       string
+	VoiceChannelID string
 }{
-	ID:        "ctf_channels.id",
-	TopicChan: "ctf_channels.topic_chan",
-	CreatedAt: "ctf_channels.created_at",
-	GuildID:   "ctf_channels.guild_id",
-	Title:     "ctf_channels.title",
-	URL:       "ctf_channels.url",
-	Archived:  "ctf_channels.archived",
-	Username:  "ctf_channels.username",
-	Password:  "ctf_channels.password",
-	CtftimeID: "ctf_channels.ctftime_id",
-	APIToken:  "ctf_channels.api_token",
+	ID:             "ctf_channels.id",
+	TopicChan:      "ctf_channels.topic_chan",
+	CreatedAt:      "ctf_channels.created_at",
+	GuildID:        "ctf_channels.guild_id",
+	Title:          "ctf_channels.title",
+	URL:            "ctf_channels.url",
+	Archived:       "ctf_channels.archived",
+	Username:       "ctf_channels.username",
+	Password:       "ctf_channels.password",
+	CtftimeID:      "ctf_channels.ctftime_id",
+	APIToken:       "ctf_channels.api_token",
+	VoiceChannelID: "ctf_channels.voice_channel_id",
 }
 
 // Generated where
@@ -104,29 +109,31 @@ func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field
 func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
 var CTFChannelWhere = struct {
-	ID        whereHelperstring
-	TopicChan whereHelperstring
-	CreatedAt whereHelpertime_Time
-	GuildID   whereHelperstring
-	Title     whereHelperstring
-	URL       whereHelperstring
-	Archived  whereHelperbool
-	Username  whereHelpernull_String
-	Password  whereHelpernull_String
-	CtftimeID whereHelpernull_Int
-	APIToken  whereHelpernull_String
+	ID             whereHelperstring
+	TopicChan      whereHelperstring
+	CreatedAt      whereHelpertime_Time
+	GuildID        whereHelperstring
+	Title          whereHelperstring
+	URL            whereHelperstring
+	Archived       whereHelperbool
+	Username       whereHelpernull_String
+	Password       whereHelpernull_String
+	CtftimeID      whereHelpernull_Int
+	APIToken       whereHelpernull_String
+	VoiceChannelID whereHelperstring
 }{
-	ID:        whereHelperstring{field: "\"ctf_channels\".\"id\""},
-	TopicChan: whereHelperstring{field: "\"ctf_channels\".\"topic_chan\""},
-	CreatedAt: whereHelpertime_Time{field: "\"ctf_channels\".\"created_at\""},
-	GuildID:   whereHelperstring{field: "\"ctf_channels\".\"guild_id\""},
-	Title:     whereHelperstring{field: "\"ctf_channels\".\"title\""},
-	URL:       whereHelperstring{field: "\"ctf_channels\".\"url\""},
-	Archived:  whereHelperbool{field: "\"ctf_channels\".\"archived\""},
-	Username:  whereHelpernull_String{field: "\"ctf_channels\".\"username\""},
-	Password:  whereHelpernull_String{field: "\"ctf_channels\".\"password\""},
-	CtftimeID: whereHelpernull_Int{field: "\"ctf_channels\".\"ctftime_id\""},
-	APIToken:  whereHelpernull_String{field: "\"ctf_channels\".\"api_token\""},
+	ID:             whereHelperstring{field: "\"ctf_channels\".\"id\""},
+	TopicChan:      whereHelperstring{field: "\"ctf_channels\".\"topic_chan\""},
+	CreatedAt:      whereHelpertime_Time{field: "\"ctf_channels\".\"created_at\""},
+	GuildID:        whereHelperstring{field: "\"ctf_channels\".\"guild_id\""},
+	Title:          whereHelperstring{field: "\"ctf_channels\".\"title\""},
+	URL:            whereHelperstring{field: "\"ctf_channels\".\"url\""},
+	Archived:       whereHelperbool{field: "\"ctf_channels\".\"archived\""},
+	Username:       whereHelpernull_String{field: "\"ctf_channels\".\"username\""},
+	Password:       whereHelpernull_String{field: "\"ctf_channels\".\"password\""},
+	CtftimeID:      whereHelpernull_Int{field: "\"ctf_channels\".\"ctftime_id\""},
+	APIToken:       whereHelpernull_String{field: "\"ctf_channels\".\"api_token\""},
+	VoiceChannelID: whereHelperstring{field: "\"ctf_channels\".\"voice_channel_id\""},
 }
 
 // CTFChannelRels is where relationship names are stored.
@@ -167,8 +174,8 @@ func (r *ctfChannelR) GetParentChallChannels() ChallChannelSlice {
 type ctfChannelL struct{}
 
 var (
-	ctfChannelAllColumns            = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived", "username", "password", "ctftime_id", "api_token"}
-	ctfChannelColumnsWithoutDefault = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived"}
+	ctfChannelAllColumns            = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived", "username", "password", "ctftime_id", "api_token", "voice_channel_id"}
+	ctfChannelColumnsWithoutDefault = []string{"id", "topic_chan", "created_at", "guild_id", "title", "url", "archived", "voice_channel_id"}
 	ctfChannelColumnsWithDefault    = []string{"username", "password", "ctftime_id", "api_token"}
 	ctfChannelPrimaryKeyColumns     = []string{"id"}
 	ctfChannelGeneratedColumns      = []string{}
