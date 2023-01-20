@@ -21,8 +21,14 @@ type Challenge struct {
 }
 
 func New(urlBase, token string) *Client {
+	c := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
 	return &Client{
-		c:       http.DefaultClient,
+		c:       c,
 		urlBase: urlBase,
 		token:   token,
 	}
