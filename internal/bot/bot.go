@@ -2,6 +2,7 @@ package bot
 
 import (
 	"database/sql"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/movitz-s/roddbot/internal/config"
@@ -13,6 +14,8 @@ type bot struct {
 	conf *config.Config
 	log  *zap.Logger
 	db   *sql.DB
+
+	sync.Mutex
 }
 
 func New(conf *config.Config, log *zap.Logger, db *sql.DB) (*bot, error) {

@@ -21,6 +21,12 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 		}
 	}()
 
+	if !b.TryLock() {
+		b.reply(m.Interaction, "Retry when other commands are done running.")
+		return
+	}
+	defer b.Unlock()
+
 	d := m.Interaction.ApplicationCommandData()
 
 	if d.Name != "ctf" {
