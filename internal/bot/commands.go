@@ -4,7 +4,27 @@ import "github.com/bwmarrin/discordgo"
 
 func cmds() []*discordgo.ApplicationCommand {
 	f := false
+	admin := int64(discordgo.PermissionAdministrator)
 	return []*discordgo.ApplicationCommand{
+		{
+			Name:                     "map-roles",
+			Type:                     discordgo.ChatApplicationCommand,
+			Description:              "Map Discord to Roddbot roles",
+			DefaultMemberPermissions: &admin,
+			DMPermission:             &f,
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "admin-role",
+					Type:        discordgo.ApplicationCommandOptionMentionable,
+					Description: "Which Discord role should grant the Roddbot admin role. If none, guild admins become roddbot admins.",
+				},
+				{
+					Name:        "player-role",
+					Type:        discordgo.ApplicationCommandOptionMentionable,
+					Description: "Which Discord role should grant the Roddbot player role. If none, everyone is granted permission",
+				},
+			},
+		},
 		{
 			Name:         "ctf",
 			Type:         discordgo.ChatApplicationCommand,

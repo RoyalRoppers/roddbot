@@ -9,6 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/movitz-s/roddbot/internal/ctfd"
 	"github.com/movitz-s/roddbot/internal/models"
+	"github.com/movitz-s/roddbot/internal/permissions"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -34,7 +35,10 @@ type SolvePayload struct {
 }
 
 func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
-	b.log.Info("new ctf", zap.Any("p", p))
+	if !b.hasPermission(m, permissions.CTFCreate) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
 
 	exists, err := models.CTFChannels(
 		models.CTFChannelWhere.Title.EQ(*p.Name),
@@ -105,7 +109,10 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 }
 
 func (b *bot) updateCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
-	b.log.Info("update ctf", zap.Any("p", p))
+	if !b.hasPermission(m, permissions.CTFUpdate) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
 
 	ctf, err := models.CTFChannels(
 		models.CTFChannelWhere.TopicChan.EQ(m.ChannelID),
@@ -229,6 +236,11 @@ func (b *bot) updateCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) 
 }
 
 func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
+	if !b.hasPermission(m, permissions.ChallengeCreate) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
+
 	ctf, err := models.CTFChannels(
 		models.CTFChannelWhere.TopicChan.EQ(m.ChannelID),
 	).One(context.TODO(), b.db)
@@ -255,6 +267,11 @@ func (b *bot) newChall(m *discordgo.InteractionCreate, p *NewChallPayload) {
 }
 
 func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
+	if !b.hasPermission(m, permissions.ChallengeSolve) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
+
 	challChan, err := models.ChallChannels(
 		models.ChallChannelWhere.ID.EQ(m.ChannelID),
 	).One(context.TODO(), b.db)
@@ -292,6 +309,11 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 }
 
 func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
+	if !b.hasPermission(m, permissions.CTFImportCTFD) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
+
 	ctf, err := models.CTFChannels(
 		models.CTFChannelWhere.GuildID.EQ(m.GuildID),
 	).One(context.TODO(), b.db)
@@ -359,6 +381,11 @@ func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 }
 
 func (b *bot) purge(m *discordgo.InteractionCreate) {
+	if !b.hasPermission(m, permissions.CTFPurge) {
+		b.reply(m.Interaction, "No permission to create CTF")
+		return
+	}
+
 	ctf, err := models.CTFChannels(
 		models.CTFChannelWhere.TopicChan.EQ(m.ChannelID),
 		qm.Load(models.CTFChannelRels.ParentChallChannels),

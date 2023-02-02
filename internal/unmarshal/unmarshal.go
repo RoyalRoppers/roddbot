@@ -26,8 +26,8 @@ func Unmarshal(m []*discordgo.ApplicationCommandInteractionDataOption, dest any)
 		field := reflect.Indirect(val).Elem().Elem().FieldByName(x)
 
 		switch opt.Type {
-		case discordgo.ApplicationCommandOptionString:
-			x := opt.StringValue()
+		case discordgo.ApplicationCommandOptionMentionable, discordgo.ApplicationCommandOptionString:
+			x := opt.Value.(string)
 			if field.Type().Kind() == reflect.Pointer {
 				field.Set(reflect.ValueOf(&x))
 			} else {
@@ -50,7 +50,7 @@ func Unmarshal(m []*discordgo.ApplicationCommandInteractionDataOption, dest any)
 				field.SetBool(x)
 			}
 		default:
-			panic("type not supported")
+			panic("type not supported: " + opt.Type.String())
 		}
 	}
 }

@@ -29,12 +29,22 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 
 	d := m.Interaction.ApplicationCommandData()
 
-	if d.Name != "ctf" {
+	_, err := b.guildSanityCheck(m)
+	if err != nil {
 		return
 	}
 
-	_, err := b.guildSanityCheck(m)
-	if err != nil {
+	b.log.Info("command received", zap.Any("payload", d))
+
+	if d.Name == "map-roles" {
+		var payload RoleMapPayload
+		unmarshal.Unmarshal(d.Options, &payload)
+		b.handlePermissionMap(m, &payload)
+		return
+	}
+
+	if d.Name != "ctf" {
+		b.log.Warn("unknown command", zap.String("cmd", d.Name))
 		return
 	}
 

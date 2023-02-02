@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/movitz-s/roddbot/internal/config"
+	"github.com/movitz-s/roddbot/internal/permissions"
 	"go.uber.org/zap"
 )
 
@@ -14,6 +15,7 @@ type bot struct {
 	conf *config.Config
 	log  *zap.Logger
 	db   *sql.DB
+	perm *permissions.Service
 
 	sync.Mutex
 }
@@ -29,6 +31,7 @@ func New(conf *config.Config, log *zap.Logger, db *sql.DB) (*bot, error) {
 		conf: conf,
 		log:  log.Named("bot"),
 		db:   db,
+		perm: permissions.New(db, log),
 	}
 
 	b.sess.ShouldRetryOnRateLimit = false
@@ -40,7 +43,8 @@ func New(conf *config.Config, log *zap.Logger, db *sql.DB) (*bot, error) {
 		for _, ac := range cmds() {
 			cmd, err := b.sess.ApplicationCommandCreate(sess.State.User.ID, "", ac)
 			if err != nil {
-				log.Error("could not create cmd", zap.Error(err))
+				log.Error("could not create cmd", zap.Error(err), zap.String("cmdname", ac.Name))
+				continue
 			}
 			b.log.Info("cmd created", zap.String("cmd-name", ac.Name), zap.String("cmd-id", cmd.ID))
 		}
