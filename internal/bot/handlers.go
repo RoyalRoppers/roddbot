@@ -310,7 +310,7 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 
 func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 	if !b.hasPermission(m, permissions.CTFImportCTFD) {
-		b.reply(m.Interaction, "No permission to create CTF")
+		b.reply(m.Interaction, "No permission to import from CTFd")
 		return
 	}
 
@@ -382,7 +382,7 @@ func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 
 func (b *bot) purge(m *discordgo.InteractionCreate) {
 	if !b.hasPermission(m, permissions.CTFPurge) {
-		b.reply(m.Interaction, "No permission to create CTF")
+		b.reply(m.Interaction, "No permission to purge CTF")
 		return
 	}
 
