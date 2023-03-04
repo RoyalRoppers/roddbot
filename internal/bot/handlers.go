@@ -102,7 +102,7 @@ func (b *bot) newCTF(m *discordgo.InteractionCreate, p *NewUpdateCTFPayload) {
 		return
 	}
 
-	err = b.reply(m.Interaction, fmt.Sprintf("Added challenge %s", chann.Mention()))
+	err = b.reply(m.Interaction, fmt.Sprintf("Added ctf %s", chann.Mention()))
 	if err != nil {
 		b.log.Error("could not respond", zap.Error(err))
 	}
@@ -316,10 +316,13 @@ func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 
 	ctf, err := models.CTFChannels(
 		models.CTFChannelWhere.GuildID.EQ(m.GuildID),
+		models.CTFChannelWhere.TopicChan.EQ(m.ChannelID),
 	).One(context.TODO(), b.db)
 	if err != nil {
-		b.reply(m.Interaction, "Could not find guild")
-		b.log.Error("could not get guild", zap.Error(err))
+		if err != sql.ErrNoRows {
+			b.log.Error("could not get ctf", zap.Error(err))
+		}
+		b.reply(m.Interaction, "Not in a valid ctf channel")
 		return
 	}
 
@@ -335,7 +338,7 @@ func (b *bot) importCtfd(m *discordgo.InteractionCreate) {
 		return
 	}
 	if err != nil {
-		b.reply(m.Interaction, "Something went wrong when talking to CTFd")
+		b.reply(m.Interaction, "Something went wrong when talking to CTFd: `"+err.Error()+"`")
 		return
 	}
 
