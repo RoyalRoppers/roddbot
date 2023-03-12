@@ -26,7 +26,7 @@ func Unmarshal(m []*discordgo.ApplicationCommandInteractionDataOption, dest any)
 		field := reflect.Indirect(val).Elem().Elem().FieldByName(x)
 
 		switch opt.Type {
-		case discordgo.ApplicationCommandOptionMentionable, discordgo.ApplicationCommandOptionString:
+		case discordgo.ApplicationCommandOptionMentionable, discordgo.ApplicationCommandOptionString, discordgo.ApplicationCommandOptionChannel:
 			x := opt.Value.(string)
 			if field.Type().Kind() == reflect.Pointer {
 				field.Set(reflect.ValueOf(&x))

@@ -186,5 +186,67 @@ func cmds() []*discordgo.ApplicationCommand {
 				},
 			},
 		},
+		{
+			Name:         "events",
+			Type:         discordgo.ChatApplicationCommand,
+			Description:  "events",
+			DMPermission: &f,
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "new",
+					Description: "Create a new event",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Name:        "title",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "Title",
+							Required:    true,
+						},
+						{
+							Name:        "start",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "Start date and time (2006-01-02 15:04)",
+							Required:    true,
+						},
+						{
+							Name:        "end",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "End date and time (2006-01-02 15:04)",
+							Required:    true,
+						},
+						{
+							Name:        "location",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "Location",
+							Required:    true,
+						},
+						{
+							Name:        "description",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "Description",
+							Required:    true,
+						},
+						{
+							Name:        "announcement-channel",
+							Type:        discordgo.ApplicationCommandOptionChannel,
+							Description: "Announcement channel",
+							Required:    true,
+						},
+						{
+							Name:        "announcement-time",
+							Type:        discordgo.ApplicationCommandOptionString,
+							Description: "Delay the announcement (2006-01-02 15:04). Leave empty if you want it announce it now.",
+						},
+					},
+				},
+				{
+					Name:        "list",
+					Description: "List events",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options:     []*discordgo.ApplicationCommandOption{},
+				},
+			},
+		},
 	}
 }

@@ -56,8 +56,11 @@ func (b *bot) hasPermission(m *discordgo.InteractionCreate, p permissions.Permis
 	// note: the @everyone role is wierd, should not be used here
 
 	permms := []permissions.Permission{}
+	if m.Member.Permissions&discordgo.PermissionAdministrator != 0 {
+		permms = append(permms, permissions.Roles.Admin...)
+	}
 	for _, v := range m.Member.Roles {
-		if mapping.AdminRoleID.String == v || m.Member.Permissions&discordgo.PermissionAdministrator != 0 {
+		if mapping.AdminRoleID.String == v {
 			permms = append(permms, permissions.Roles.Admin...)
 		}
 		if !mapping.PlayerRoleID.Valid || mapping.PlayerRoleID.String == v {

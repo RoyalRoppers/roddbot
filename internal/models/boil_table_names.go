@@ -6,11 +6,13 @@ package models
 var TableNames = struct {
 	ChallChannels     string
 	CTFChannels       string
+	Events            string
 	GuildRoleMappings string
 	Guilds            string
 }{
 	ChallChannels:     "chall_channels",
 	CTFChannels:       "ctf_channels",
+	Events:            "events",
 	GuildRoleMappings: "guild_role_mappings",
 	Guilds:            "guilds",
 }

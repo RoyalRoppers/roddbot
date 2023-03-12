@@ -36,18 +36,24 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 
 	b.log.Info("command received", zap.Any("payload", d))
 
-	if d.Name == "map-roles" {
+	switch d.Name {
+	case "map-roles":
 		var payload RoleMapPayload
 		unmarshal.Unmarshal(d.Options, &payload)
 		b.handlePermissionMap(m, &payload)
-		return
-	}
 
-	if d.Name != "ctf" {
+	case "ctf":
+		b.handleCTF(m, d)
+
+	case "events":
+		b.handleEvents(m, d)
+
+	default:
 		b.log.Warn("unknown command", zap.String("cmd", d.Name))
-		return
 	}
+}
 
+func (b *bot) handleCTF(m *discordgo.InteractionCreate, d discordgo.ApplicationCommandInteractionData) {
 	switch d.Options[0].Name {
 	case "new":
 		var payload NewUpdateCTFPayload
@@ -74,6 +80,22 @@ func (b *bot) msgCreateHandler(s *discordgo.Session, m *discordgo.InteractionCre
 
 	case "purge":
 		b.purge(m)
+
+	default:
+		b.log.Error("unhandeled interaction", zap.Any("interaction", d))
+		b.reply(m.Interaction, "🚨🚨 Unkown interaction, something is wrong 🚨🚨")
+	}
+}
+
+func (b *bot) handleEvents(m *discordgo.InteractionCreate, d discordgo.ApplicationCommandInteractionData) {
+	switch d.Options[0].Name {
+	case "new":
+		var payload NewUpdateEventPayload
+		unmarshal.Unmarshal(d.Options[0].Options, &payload)
+		b.newEvent(m, &payload)
+
+	case "list":
+		b.listEvents(m)
 
 	default:
 		b.log.Error("unhandeled interaction", zap.Any("interaction", d))

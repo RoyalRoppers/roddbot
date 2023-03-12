@@ -11,6 +11,8 @@ const (
 	ChallengeCreate Permission = "chall.create"
 	ChallengeDelete Permission = "chall.delete"
 	ChallengeSolve  Permission = "chall.solve"
+	EventCreate     Permission = "event.create"
+	EventList       Permission = "event.list"
 )
 
 type Role []Permission
@@ -21,6 +23,6 @@ type roles struct {
 }
 
 var Roles roles = roles{
-	Admin:  Role{CTFCreate, CTFUpdate, CTFArchive, CTFPurge, CTFImportCTFD, ChallengeCreate, ChallengeDelete, ChallengeSolve},
+	Admin:  Role{CTFCreate, CTFUpdate, CTFArchive, CTFPurge, CTFImportCTFD, ChallengeCreate, ChallengeDelete, ChallengeSolve, EventCreate, EventList},
 	Player: Role{CTFCreate, CTFImportCTFD, ChallengeCreate, ChallengeDelete, ChallengeSolve},
 }
