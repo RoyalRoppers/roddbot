@@ -285,6 +285,11 @@ func (b *bot) solve(m *discordgo.InteractionCreate, p *SolvePayload) {
 		return
 	}
 
+	if challChan.SolvedAt.Valid {
+		b.reply(m.Interaction, "The challenge is already solved")
+		return
+	}
+
 	_, err = b.sess.ChannelEdit(challChan.ID, &discordgo.ChannelEdit{
 		Name:     channelName(challChan.Title, challChan.Category.Ptr(), true),
 		Position: channelPosition(challChan.Category.Ptr(), true),
